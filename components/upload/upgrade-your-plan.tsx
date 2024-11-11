@@ -1,4 +1,4 @@
-import { ArrowRight } from "lucide-react";
+/*import { ArrowRight } from "lucide-react";
 import Link from "next/link";
 
 export default function UpgradeYourPlan() {
@@ -16,4 +16,4 @@ export default function UpgradeYourPlan() {
       </Link>
     </div>
   );
-}
+}*/

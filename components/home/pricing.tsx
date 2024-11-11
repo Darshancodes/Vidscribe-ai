@@ -2,7 +2,7 @@ import { ArrowRight, CheckIcon } from "lucide-react";
 import { Button } from "../ui/button";
 import Link from "next/link";
 import { cn } from "@/lib/utils";
-import { plansMap } from "@/lib/constants";
+//import { plansMap } from "@/lib/constants";
 
 export default function Pricing() {
   return (
@@ -13,7 +13,7 @@ export default function Pricing() {
             Pricing
           </h2>
         </div>
-        <div className="relative flex justify-center flex-col lg:flex-row items-center lg:items-stretch gap-8">
+        {/*<div className="relative flex justify-center flex-col lg:flex-row items-center lg:items-stretch gap-8">
           {plansMap.map(
             ({ name, price, description, items, id, paymentLink }, idx) => (
               <div className="relative w-full max-w-lg" key={idx}>
@@ -67,10 +67,10 @@ export default function Pricing() {
                     </Button>
                   </div>
                 </div>
-              </div>
+              </div>*
             )
           )}
-        </div>
+        </div>*/}
       </div>
     </section>
   );

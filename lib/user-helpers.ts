@@ -1,5 +1,5 @@
 import { NeonQueryFunction } from "@neondatabase/serverless";
-import { plansMap } from "./constants";
+//import { plansMap } from "./constants";
 
 export async function hasCancelledSubscription(
   sql: NeonQueryFunction<false, false>,
@@ -33,6 +33,6 @@ export async function updateUser(
 export function getPlanType(priceId: string) {
   if (priceId === null) return { id: "starter", name: "Starter" };
 
-  const checkPlanType = plansMap.filter((plan) => plan.priceId === priceId);
-  return checkPlanType?.[0];
+  //const checkPlanType = plansMap.filter((plan) => plan.priceId === priceId);
+  //return checkPlanType?.[0];
 }

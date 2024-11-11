@@ -1,4 +1,4 @@
-export const plansMap = [
+/*export const plansMap = [
   {
     id: "basic",
     name: "Basic",
@@ -23,7 +23,7 @@ export const plansMap = [
         ? "price_1PtLVqBPnsISnc82bspCVu5e"
         : "",
   },
-];
+];*/
 
 export const ORIGIN_URL =
   process.env.NODE_ENV === "development"
