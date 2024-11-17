@@ -37,11 +37,13 @@ export default async function Dashboard() {
 
           
             <p className="mt-2 text-lg leading-8 text-gray-600 max-w-2xl text-center">
-              You get{" "}
-              <span className="font-bold text-amber-600 bg-amber-100 px-2 py-1 rounded-md">
-                
-              </span>{" "}
-              as part of the{" "}
+              You get 
+
+              <span className="font-bold text-amber-600 bg-amber-100 px-1 py-0.5 rounded-md">
+                3 blog posts
+              </span>
+              
+              as part of this hackathon
             </p>
 
 
@@ -49,8 +51,6 @@ export default async function Dashboard() {
             <BgGradient>
               <UploadForm />
             </BgGradient>
-          ) : (
-          )
         </div>
       </div>
     </BgGradient>

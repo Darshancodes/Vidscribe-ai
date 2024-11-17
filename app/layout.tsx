@@ -1,50 +1,37 @@
-import type { Metadata } from "next";
-import { IBM_Plex_Sans as FontSans } from "next/font/google";
-import "./globals.css";
-import { cn } from "@/lib/utils";
-import Header from "@/components/home/header";
-import { ClerkProvider } from "@clerk/nextjs";
-import { Toaster } from "@/components/ui/toaster";
-import { ORIGIN_URL } from "@/lib/constants";
+import React from "react";
+import { cn } from "@/functions";
+import Providers from "@/components/global/providers"; // Your custom Providers
+import "@/styles/globals.css";
+import { ClerkProvider } from "@clerk/nextjs"; // Only import ClerkProvider here
+import MarketingLayout from "./marketinglayout"; // Assuming MarketingLayout is in the layouts folder
 
-const fontSans = FontSans({
-  subsets: ["latin"],
-  weight: ["300", "400", "500", "700"],
-  variable: "--font-sans",
-});
+interface Props {
+    children: React.ReactNode;
+}
 
-export const metadata: Metadata = {
-  title: "VidScribe",
-  description:
-    "Convert your video or voice into a Blog Post in seconds with the power of AI!",
-  icons: {
-    icon: "/icon.ico",
-  },
-  metadataBase: new URL(ORIGIN_URL),
-  alternates: {
-    canonical: ORIGIN_URL,
-  },
+const RootLayout = ({ children }: Props) => {
+    return (
+        <html lang="en">
+            <head>
+                <meta charSet="UTF-8" />
+                <meta name="viewport" content="width=device-width, initial-scale=1" />
+                <title>Vidscribe</title>
+            </head>
+            <body
+                className={cn(
+                    "min-h-screen bg-background text-foreground antialiased font-default overflow-x-hidden !scrollbar-hide",
+                )}
+            >
+                {/* Only one <ClerkProvider> at the root level */}
+                <ClerkProvider>
+                    
+                        {/* MarketingLayout is fine to render children but doesn't wrap with ClerkProvider */}
+                        <MarketingLayout>{children}</MarketingLayout>
+                
+                </ClerkProvider>
+            </body>
+        </html>
+    );
 };
 
-export default function RootLayout({
-  children,
-}: Readonly<{
-  children: React.ReactNode;
-}>) {
-  return (
-    <ClerkProvider>
-      <html lang="en">
-        <body
-          className={cn(
-            "min-h-screen bg-background font-sans antialiased",
-            fontSans.variable
-          )}
-        >
-          <Header></Header>
-          <main>{children}</main>
-          <Toaster />
-        </body>
-      </html>
-    </ClerkProvider>
-  );
-}
+export default RootLayout;

@@ -1,40 +1,41 @@
-import BgGradient from "@/components/common/bg-gradient";
-import Banner from "@/components/home/banner";
-import HowItWorks from "@/components/home/howitworks";
-import Pricing from "@/components/home/pricing";
-import { Dot } from "lucide-react";
 
-export default function Home() {
+
+import Companies from "@/components/marketing/companies";
+import Hero from "@/components/marketing/hero";
+import Background from "@/components/global/background";
+
+
+import { Spotlight } from "@/components/ui/spotlight";
+import Wrapper from "@/components/global/wrapper";
+import Container from "@/components/global/container";
+//import Connect from "@/components/marketing/connect";
+import Features from "@/components/marketing/features";
+import Perks from "@/components/marketing/perks";
+import Reviews from "@/components/marketing/reviews";
+import CTA from "@/components/marketing/cta";
+
+const Home = () => {
   return (
-    <main className="mx-auto w-full inset-0 h-full bg-[radial-gradient(#e5e7eb_1px,transparent_1px)] [background-size:16px_16px]">
-      <BgGradient />
-      <Banner />
-      <div className="flex items-center justify-center">
-        <Dot className="text-purple-400"></Dot>
-        <Dot className="text-purple-400"></Dot>
-        <Dot className="text-purple-400"></Dot>
-      </div>
-      <HowItWorks />
-      <div className="flex items-center justify-center">
-        <Dot className="text-purple-400"></Dot>
-        <Dot className="text-purple-400"></Dot>
-        <Dot className="text-purple-400"></Dot>
-      </div>
-
-      <Pricing />
-
-      <div className="flex items-center justify-center">
-        <Dot className="text-purple-400"></Dot>
-        <Dot className="text-purple-400"></Dot>
-        <Dot className="text-purple-400"></Dot>
-      </div>
-
-      <footer className="bg-gray-200/20 flex h-20 py-24 px-12 z-20 relative overflow-hidden flex-col gap-2">
-        <p>All Rights Reserved, {new Date().getFullYear()}</p>
-        <a href="https://x.com/@Darshanshub" target="_blank">
-          Built by Darshan 🚀
-        </a>
-      </footer>
-    </main>
+      <Background>
+          <Wrapper className="py-20 relative">
+              <Container className="relative">
+                  <Spotlight
+                      className="-top-40 left-0 md:left-60 md:-top-20"
+                      fill="rgba(255, 255, 255, 0.5)"
+                  />
+                  <Hero />
+              </Container>
+              <Container className="py-8 lg:py-20">
+                  <Companies />
+              </Container>
+              {/*<Connect />*/}
+              <Features />
+              <Perks />
+              <Reviews />
+              <CTA />
+          </Wrapper>
+      </Background>
   );
-}
+};
+
+export default Home;

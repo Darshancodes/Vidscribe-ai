@@ -1,6 +1,7 @@
 import { SignedIn, SignedOut, SignInButton, UserButton } from "@clerk/nextjs";
 import Image from "next/image";
 import Link from "next/link";
+import React from "react";
 
 const NavLink = ({
   href,
@@ -37,7 +38,6 @@ export default function Header() {
         </NavLink>
       </div>
       <div className="flex lg:justify-center gap-2 lg:gap-12 lg:items-center">
-        <NavLink href="/#pricing">Pricing</NavLink>
         <SignedIn>
           <NavLink href="/posts">Your Posts</NavLink>
         </SignedIn>
