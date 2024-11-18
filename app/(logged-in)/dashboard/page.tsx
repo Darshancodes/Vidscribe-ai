@@ -27,19 +27,19 @@ export default async function Dashboard() {
           <Badge className="bg-gradient-to-r from-purple-700 to-pink-800 text-white px-4 py-1 text-lg font-semibold capitalize">
           </Badge>
 
-          <h2 className="capitalize text-3xl font-bold tracking-tight text-gray-900 sm:text-4xl">
+          <h2 className="capitalize text-3xl font-bold tracking-tight text-white-900 sm:text-4xl">
             Start creating amazing content
           </h2>
 
-          <p className="mt-2 text-lg leading-8 text-gray-600 max-w-2xl text-center">
+          <p className="mt-2 text-lg leading-8 text-white-600 max-w-2xl text-center">
             Upload your audio or video file and let our AI do the magic!
           </p>
 
           
-            <p className="mt-2 text-lg leading-8 text-gray-600 max-w-2xl text-center">
+            <p className="mt-2 text-lg leading-8 text-white-600 max-w-2xl text-center">
               You get 
 
-              <span className="font-bold text-amber-600 bg-amber-100 px-1 py-0.5 rounded-md">
+              <span className="ml-1 mr-1 font-bold text-purple-600 bg-purple-100 px-1 py-0.5 rounded-md">
                 3 blog posts
               </span>
               
