@@ -36,75 +36,31 @@ export async function transcribeUploadedFile(
     };
   }
 
+  const response = await fetch(fileUrl);
+
   try {
-    // Fetch the file and convert it to a blob
-    const response = await fetch(fileUrl);
-    if (!response.ok) {
-      throw new Error(`Failed to fetch file: ${response.statusText}`);
-    }
-
-    const fileBuffer = await response.arrayBuffer();
-    const fileBlob = new Blob([fileBuffer], { type: response.headers.get('content-type') || 'audio/mpeg' });
-
-    // Convert blob to File object
-    const file = new File([fileBlob], fileName, {
-      type: fileBlob.type,
+    const transcriptions = await openai.audio.transcriptions.create({
+      model: "whisper-1",
+      file: response,
     });
 
-    // Implement retry logic
-    const MAX_RETRIES = 3;
-    let attempt = 0;
-    let lastError: Error | null = null;
-
-    while (attempt < MAX_RETRIES) {
-      try {
-        const transcriptions = await openai.audio.transcriptions.create({
-          model: "whisper-1",
-          file: file,
-        });
-
-        return {
-          success: true,
-          message: "File uploaded successfully!",
-          data: { transcriptions, userId },
-        };
-      } catch (error) {
-        lastError = error as Error;
-        attempt++;
-
-        if (error instanceof OpenAI.APIError) {
-          if (error.status === 413) {
-            return {
-              success: false,
-              message: "File size exceeds the max limit of 20MB",
-              data: null,
-            };
-          }
-          // Handle rate limiting
-          if (error.status === 429) {
-            const delay = Math.min(1000 * Math.pow(2, attempt - 1), 8000);
-            await new Promise(resolve => setTimeout(resolve, delay));
-            continue;
-          }
-        }
-
-        if (attempt === MAX_RETRIES) {
-          console.error("Error processing file", error);
-          return {
-            success: false,
-            message: error instanceof Error ? error.message : "Error processing file",
-            data: null,
-          };
-        }
-
-        // Wait before retrying
-        await new Promise(resolve => setTimeout(resolve, 1000 * attempt));
-      }
-    }
-
-    throw lastError;
+    console.log({ transcriptions });
+    return {
+      success: true,
+      message: "File uploaded successfully!",
+      data: { transcriptions, userId },
+    };
   } catch (error) {
     console.error("Error processing file", error);
+
+    if (error instanceof OpenAI.APIError && error.status === 413) {
+      return {
+        success: false,
+        message: "File size exceeds the max limit of 20MB",
+        data: null,
+      };
+    }
+
     return {
       success: false,
       message: error instanceof Error ? error.message : "Error processing file",
@@ -151,17 +107,16 @@ async function generateBlogPost({
   transcriptions: string;
   userPosts: string;
 }) {
-  try {
-    const completion = await openai.chat.completions.create({
-      messages: [
-        {
-          role: "system",
-          content:
-            "You are a skilled content writer that converts audio transcriptions into well-structured, engaging blog posts in Markdown format. Create a comprehensive blog post with a catchy title, introduction, main body with multiple sections, and a conclusion. Analyze the user's writing style from their previous posts and emulate their tone and style in the new post. Keep the tone casual and professional.",
-        },
-        {
-          role: "user",
-          content: `Here are some of my previous blog posts for reference:
+  const completion = await openai.chat.completions.create({
+    messages: [
+      {
+        role: "system",
+        content:
+          "You are a skilled content writer that converts audio transcriptions into well-structured, engaging blog posts in Markdown format. Create a comprehensive blog post with a catchy title, introduction, main body with multiple sections, and a conclusion. Analyze the user's writing style from their previous posts and emulate their tone and style in the new post. Keep the tone casual and professional.",
+      },
+      {
+        role: "user",
+        content: `Here are some of my previous blog posts for reference:
 
 ${userPosts}
 
@@ -178,20 +133,15 @@ Please convert the following transcription into a well-structured blog post usin
 9. Emulate my writing style, tone, and any recurring patterns you notice from my previous posts.
 
 Here's the transcription to convert: ${transcriptions}`,
-        },
-      ],
-      model: "gpt-4-turbo-preview",  // Updated to a valid model name
-      temperature: 0.7,
-      max_tokens: 1000,
-    });
+      },
+    ],
+    model: "gpt-4o-mini",
+    temperature: 0.7,
+    max_tokens: 1000,
+  });
 
-    return completion.choices[0].message.content;
-  } catch (error) {
-    console.error("Error generating blog post", error);
-    throw error;
-  }
+  return completion.choices[0].message.content;
 }
-
 export async function generateBlogPostAction({
   transcriptions,
   userId,
@@ -199,37 +149,33 @@ export async function generateBlogPostAction({
   transcriptions: { text: string };
   userId: string;
 }) {
-  try {
-    const userPosts = await getUserBlogPosts(userId);
-    let postId = null;
+  const userPosts = await getUserBlogPosts(userId);
 
-    if (transcriptions) {
-      const blogPost = await generateBlogPost({
-        transcriptions: transcriptions.text,
-        userPosts,
-      });
+  let postId = null;
 
-      if (!blogPost) {
-        return {
-          success: false,
-          message: "Blog post generation failed, please try again...",
-        };
-      }
+  if (transcriptions) {
+    const blogPost = await generateBlogPost({
+      transcriptions: transcriptions.text,
+      userPosts,
+    });
 
-      const [title, ...contentParts] = blogPost?.split("\n\n") || [];
-
-      if (blogPost) {
-        postId = await saveBlogPost(userId, title, blogPost);
-      }
+    if (!blogPost) {
+      return {
+        success: false,
+        message: "Blog post generation failed, please try again...",
+      };
     }
 
-    revalidatePath(`/posts/${postId}`);
-    redirect(`/posts/${postId}`);
-  } catch (error) {
-    console.error("Error in generateBlogPostAction", error);
-    return {
-      success: false,
-      message: "Failed to generate and save blog post",
-    };
+    const [title, ...contentParts] = blogPost?.split("\n\n") || [];
+
+    //database connection
+
+    if (blogPost) {
+      postId = await saveBlogPost(userId, title, blogPost);
+    }
   }
+
+  //navigate
+  revalidatePath(`/posts/${postId}`);
+  redirect(`/posts/${postId}`);
 }

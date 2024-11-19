@@ -84,7 +84,7 @@ export default function ContentEditor({
     <form action={formAction} className="flex flex-col gap-2">
       <div className="flex justify-between items-center border-b-2 border-gray-200/50 pb-4">
         <div>
-          <h2 className="text-2xl font-bold text-gray-800 mb-2 flex items-center gap-2">
+          <h2 className="text-2xl font-bold text-white-800 mb-2 flex items-center gap-2">
             📝 Edit your post
           </h2>
           <p className="text-gray-600">Start editing your blog post below...</p>
@@ -100,13 +100,13 @@ export default function ContentEditor({
           </Button>
         </div>
       </div>
-      <BgGradient className="opacity-20">
+ 
         <ForwardRefEditor
           markdown={posts[0].content}
           className="markdown-content border-dotted border-gray-200 border-2 p-4 rounded-md animate-in ease-in-out duration-75"
           onChange={handleContentChange}
         ></ForwardRefEditor>
-      </BgGradient>
+     
     </form>
   );
 }

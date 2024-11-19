@@ -52,7 +52,7 @@ const Navbar = () => {
                         <div className="items-center flex gap-2 lg:gap-4">
                             {user ? (
                                 <Button size="sm" variant="white" asChild className="hidden sm:flex">
-                                    <Link href="/app">
+                                    <Link href="/dashboard">
                                         Dashboard
                                     </Link>
                                 </Button>
