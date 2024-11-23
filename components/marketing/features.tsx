@@ -17,7 +17,7 @@ const Features = () => {
                         Create content faster <br /> and smarter
                     </h2>
                     <p className="text-base md:text-lg text-center text-accent-foreground/80 mt-6">
-                        Transform your social media strategy with Luro AI&apos;s cutting-edge features, designed to optimize your content creation and engagement like never before.
+                    Your video content, beautifully written. Seamlessly Convert <br /> Videos into SEO optimised blogs that resonates.
                     </p>
                 </div>
             </Container>
@@ -40,10 +40,10 @@ const Features = () => {
                                     </div>
                                     <div className="flex flex-col">
                                         <h4 className="text-xl font-heading font-medium heading ">
-                                            Get advanced analytics
+                                            SEO optimised blogs
                                         </h4>
                                         <p className="text-sm md:text-base mt-2 text-muted-foreground">
-                                            Track your performance with detailed analytics and optimize to get better results.
+                                        Instantly transform videos into SEO-optimized blog posts with smart formatting and strategic keywords
                                         </p>
                                     </div>
                                 </div>
@@ -63,7 +63,7 @@ const Features = () => {
                                             Content ideation
                                         </h4>
                                         <p className="text-sm md:text-base mt-2 text-muted-foreground">
-                                            Generate ideas for your content with our AI-powered tools to create engaging posts in seconds.
+                                            Generate blogs for your videso with our AI-powered solution to create engaging blog posts in seconds.
                                         </p>
                                     </div>
                                 </div>
@@ -98,10 +98,10 @@ const Features = () => {
                                 <div className="bento-card w-full flex-row gap-6">
                                     <div className="flex flex-col mb-auto">
                                         <h4 className="text-xl font-heading font-medium heading ">
-                                            Seamless integrations
+                                            Instant Extract
                                         </h4>
                                         <p className="text-sm md:text-base mt-2 text-muted-foreground">
-                                            Connect your favorite tools and platforms to streamline your workflow and save time.
+                                            Export blog posts instantly within a blink of your eye. 
                                         </p>
                                     </div>
                                     <div className="w-full h-28 relative">
