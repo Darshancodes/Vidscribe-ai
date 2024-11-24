@@ -25,7 +25,7 @@ const Home = () => {
                   />
                   <Hero />
               </Container>
-              <Container className="py-8 lg:py-20">
+              <Container className="py-6 lg:py-20">
                   <Companies />
               </Container>
               {/*<Connect />*/}
