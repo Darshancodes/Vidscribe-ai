@@ -22,11 +22,11 @@ const Footer = () => {
                         <div className="flex items-center gap-2">
                             <Icons.icon className="w-5 h-5" />
                             <span className="text-xl font-medium">
-                                Vidscribe
+                                Vidscribe AI
                             </span>
                         </div>
                         <p className="text-base max-w mt-4">
-                            Empower your business with our AI tools.
+                            Your video content, beautifully written.
                         </p>
                         <Button className="mt-8">
                             <Link href="/app">

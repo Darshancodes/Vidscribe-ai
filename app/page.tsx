@@ -30,7 +30,7 @@ const Home = () => {
                   <Features />
               </div>
               <Perks />
-              <Reviews />
+              {/*<Reviews />*/}
               <CTA />
           </Wrapper>
       </Background>

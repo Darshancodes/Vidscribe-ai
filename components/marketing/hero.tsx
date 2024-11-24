@@ -43,11 +43,11 @@ const Hero = () => {
                             Start for free
                         </Link>
                     </Button>
-                    <Button asChild size="lg" variant="outline" className="hidden md:flex">
+                    {/*<Button asChild size="lg" variant="outline" className="hidden md:flex">
                         <Link href="#">
                             How it works
                         </Link>
-                    </Button>
+                    </Button>*/}
                 </div>
             </Container>
             <Container delay={0.3}>

@@ -6,12 +6,12 @@ export const PERKS = [
     {
         icon: ZapIcon,
         title: "Fast and Efficient",
-        description: "Experience quick and seamless content creation with our optimized AI tools."
+        description: "Experience quick and seamless content creation with our optimized AI."
     },
     {
         icon: ChartSplineIcon,
-        title: "Insightful Analytics",
-        description: "Gain valuable insights and analytics to enhance your social media strategy."
+        title: "Insights",
+        description: "Gain valuable blogs to enhance your content creation game."
     },
     {
         icon: LifeBuoyIcon,
@@ -20,8 +20,8 @@ export const PERKS = [
     },
     {
         icon: PaletteIcon,
-        title: "Customizable Solutions",
-        description: "Tailor the tools and features to fit your unique social media needs."
+        title: "Customizable Blogs",
+        description: "Create, Update, Delete blogs there and there. Without any extra hassle!"
     },
     {
         icon: ShieldCheckIcon,
@@ -30,7 +30,7 @@ export const PERKS = [
     },
     {
         icon: WaypointsIcon,
-        title: "Seamless Integration",
-        description: "Easily integrate with your existing social media platforms and tools."
+        title: "Seamless Extraction",
+        description: "Easily extract your blogs in markdown format and integrate anywhere."
     },
 ];
