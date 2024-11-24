@@ -9,6 +9,8 @@ import {
   generateBlogPostAction,
   transcribeUploadedFile,
 } from "@/actions/upload-actions";
+import { gql } from "@apollo/client";
+import { useRouter } from "next/navigation";
 
 const schema = z.object({
   file: z
@@ -24,8 +26,15 @@ const schema = z.object({
     ),
 });
 
+export const GET_BLOG_CONTENT = gql`
+  query GenerateBlogContent($data: String!) {
+    generateBlogContent(transcriptions: $data)
+  }
+`;
+
 export default function UploadForm() {
   const { toast } = useToast();
+  const router = useRouter();
 
   const { startUpload } = useUploadThing("videoOrAudioUploader", {
     onClientUploadComplete: () => {
@@ -92,10 +101,12 @@ export default function UploadForm() {
           description: "Please wait while we generate your blog post.",
         });
 
-        await generateBlogPostAction({
+        const postID = await generateBlogPostAction({
           transcriptions: data.transcriptions,
           userId: data.userId,
         });
+
+        router.push(`/posts/${postID}`);
 
         toast({
           title: "🎉 Woohoo! Your AI blog is created! 🎊",
@@ -105,6 +116,7 @@ export default function UploadForm() {
       }
     }
   };
+
   return (
     <form className="flex flex-col gap-6" action={handleTranscribe}>
       <div className="flex justify-end items-center gap-1.5">

@@ -1,4 +1,7 @@
 "use server";
+
+import { GET_BLOG_CONTENT } from "@/components/upload/upload-form";
+import { executeGraphQLQuery } from "@/lib/apollo-client";
 import getDbConnection from "@/lib/db";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
@@ -13,7 +16,7 @@ export async function transcribeUploadedFile(
     serverData: { userId: string; file: any };
   }[]
 ) {
-  if (!resp) {
+  if (!resp?.length) {
     return {
       success: false,
       message: "File upload failed",
@@ -36,18 +39,21 @@ export async function transcribeUploadedFile(
     };
   }
 
-  const response = await fetch(fileUrl);
-
   try {
-    const transcriptions = await openai.audio.transcriptions.create({
-      model: "whisper-1",
-      file: response,
+    const response = await fetch(fileUrl);
+    const blob = await response.blob();
+    const file = new File([blob], fileName, {
+      type: response.headers.get("content-type") || "audio/mpeg",
     });
 
-    console.log({ transcriptions });
+    const transcriptions = await openai.audio.transcriptions.create({
+      model: "whisper-1",
+      file: file,
+    });
+
     return {
       success: true,
-      message: "File uploaded successfully!",
+      message: "File transcribed successfully!",
       data: { transcriptions, userId },
     };
   } catch (error) {
@@ -73,9 +79,9 @@ async function saveBlogPost(userId: string, title: string, content: string) {
   try {
     const sql = await getDbConnection();
     const [insertedPost] = await sql`
-    INSERT INTO posts (user_id, title, content)
-    VALUES (${userId}, ${title}, ${content})
-    RETURNING id
+      INSERT INTO posts (user_id, title, content)
+      VALUES (${userId}, ${title}, ${content})
+      RETURNING id
     `;
     return insertedPost.id;
   } catch (error) {
@@ -88,11 +94,11 @@ async function getUserBlogPosts(userId: string) {
   try {
     const sql = await getDbConnection();
     const posts = await sql`
-    SELECT content FROM posts 
-    WHERE user_id = ${userId} 
-    ORDER BY created_at DESC 
-    LIMIT 3
-  `;
+      SELECT content FROM posts 
+      WHERE user_id = ${userId} 
+      ORDER BY created_at DESC 
+      LIMIT 3
+    `;
     return posts.map((post) => post.content).join("\n\n");
   } catch (error) {
     console.error("Error getting user blog posts", error);
@@ -107,41 +113,61 @@ async function generateBlogPost({
   transcriptions: string;
   userPosts: string;
 }) {
-  const completion = await openai.chat.completions.create({
-    messages: [
-      {
-        role: "system",
-        content:
-          "You are a skilled content writer that converts audio transcriptions into well-structured, engaging blog posts in Markdown format. Create a comprehensive blog post with a catchy title, introduction, main body with multiple sections, and a conclusion. Analyze the user's writing style from their previous posts and emulate their tone and style in the new post. Keep the tone casual and professional.",
+  try {
+    const response = await fetch("http://localhost:8686/graphql", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
       },
-      {
-        role: "user",
-        content: `Here are some of my previous blog posts for reference:
+      body: JSON.stringify({
+        query: `
+          query GenerateBlogContent($data: String!) {
+            generateBlogContent(transcriptions: $data)
+          }
+        `,
+        variables: {
+          data: transcriptions,
+        },
+      }),
+    });
 
-${userPosts}
+    const result = await response.json();
 
-Please convert the following transcription into a well-structured blog post using Markdown formatting. Follow this structure:
+    if (result.errors) {
+      throw new Error(result.errors[0].message);
+    }
+    console.log("result", result);
 
-1. Start with a SEO friendly catchy title on the first line.
-2. Add two newlines after the title.
-3. Write an engaging introduction paragraph.
-4. Create multiple sections for the main content, using appropriate headings (##, ###).
-5. Include relevant subheadings within sections if needed.
-6. Use bullet points or numbered lists where appropriate.
-7. Add a conclusion paragraph at the end.
-8. Ensure the content is informative, well-organized, and easy to read.
-9. Emulate my writing style, tone, and any recurring patterns you notice from my previous posts.
-
-Here's the transcription to convert: ${transcriptions}`,
-      },
-    ],
-    model: "gpt-4o-mini",
-    temperature: 0.7,
-    max_tokens: 1000,
-  });
-
-  return completion.choices[0].message.content;
+    return result.data.generateBlogContent;
+  } catch (error) {
+    console.error("Error generating blog post:", error);
+    throw error;
+  }
 }
+
+// async function generateBlogPost({
+//   transcriptions,
+//   userPosts,
+// }: {
+//   transcriptions: string;
+//   userPosts?: string;
+// }) {
+//   try {
+//     const data = await executeGraphQLQuery(GET_BLOG_CONTENT, {
+//       data: transcriptions,
+//     });
+
+//     if (!data?.generateBlogContent) {
+//       throw new Error("Failed to generate blog content");
+//     }
+
+//     return data.generateBlogContent;
+//   } catch (error) {
+//     console.error("Error generating blog post:", error);
+//     throw error;
+//   }
+// }
+
 export async function generateBlogPostAction({
   transcriptions,
   userId,
@@ -149,11 +175,16 @@ export async function generateBlogPostAction({
   transcriptions: { text: string };
   userId: string;
 }) {
-  const userPosts = await getUserBlogPosts(userId);
+  try {
+    const userPosts = await getUserBlogPosts(userId);
 
-  let postId = null;
+    if (!transcriptions?.text) {
+      return {
+        success: false,
+        message: "No transcription text provided",
+      };
+    }
 
-  if (transcriptions) {
     const blogPost = await generateBlogPost({
       transcriptions: transcriptions.text,
       userPosts,
@@ -165,17 +196,22 @@ export async function generateBlogPostAction({
         message: "Blog post generation failed, please try again...",
       };
     }
+    console.log("blogPost", blogPost);
 
-    const [title, ...contentParts] = blogPost?.split("\n\n") || [];
+    const [title, ...contentParts] = blogPost.split("\n");
+    console.log("title =>", title);
 
-    //database connection
-
-    if (blogPost) {
-      postId = await saveBlogPost(userId, title, blogPost);
-    }
+    const postId = await saveBlogPost(userId, title, blogPost);
+    console.log("postID =>", typeof postId);
+    return postId;
+    // revalidatePath(`/posts/${postId}`);
+    // redirect(`/posts/${postId}`);
+  } catch (error) {
+    console.error("Error in generateBlogPostAction:", error);
+    return {
+      success: false,
+      message:
+        error instanceof Error ? error.message : "An unexpected error occurred",
+    };
   }
-
-  //navigate
-  revalidatePath(`/posts/${postId}`);
-  redirect(`/posts/${postId}`);
 }
