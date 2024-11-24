@@ -3,6 +3,7 @@
 import { NavigationMenu, NavigationMenuContent, NavigationMenuItem, NavigationMenuLink, NavigationMenuList, NavigationMenuTrigger } from "@/components/ui/navigation-menu";
 import { CalendarRangeIcon, CircleHelp, HashIcon, Newspaper, UsersIcon } from 'lucide-react';
 import Link from 'next/link';
+import { SignedIn, SignedOut, SignInButton, UserButton } from "@clerk/nextjs";
 import React from 'react';
 import Icons from "../global/icons";
 
@@ -87,6 +88,14 @@ const Menu = () => {
                         </ul>
                     </NavigationMenuContent>
                 </NavigationMenuItem>
+                <NavigationMenuItem>
+                <SignedIn>
+          <Link className="h-10 px-4 py-2 text-sm font-normal rounded-md text-muted-foreground hover:text-foreground w-max hover:bg-none" href="/posts">Your Posts</Link>
+        </SignedIn>
+        </NavigationMenuItem>
+        <SignedIn>
+            <Link className="h-10 px-4 py-2 text-sm font-normal rounded-md text-muted-foreground hover:text-foreground w-max hover:bg-none" href="/dashboard">Upload a Video</Link>
+        </SignedIn>
             </NavigationMenuList>
         </NavigationMenu>
     )

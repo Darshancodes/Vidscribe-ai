@@ -27,8 +27,8 @@ export default function Header() {
         <NavLink href="/">
           <span className="flex items-center gap-2 shrink-0">
             <Image
-              src="/icon.ico"
-              alt="SpeakEasy logo"
+              src="/icon.svg"
+              alt="VidScibe logo"
               width={32}
               height={32}
               className="hover:rotate-12 transform transition duration-200 ease-in-out"

@@ -1,7 +1,7 @@
 "use client";
 
 import { cn } from "@/functions";
-import { useClerk } from "@clerk/nextjs";
+import { SignedIn, SignIn, useClerk, UserButton } from "@clerk/nextjs";
 import { ArrowRightIcon, XIcon } from "lucide-react";
 import Link from "next/link";
 import { useEffect, useState } from "react";
@@ -51,11 +51,9 @@ const Navbar = () => {
                         </div>
                         <div className="items-center flex gap-2 lg:gap-4">
                             {user ? (
-                                <Button size="sm" variant="white" asChild className="hidden sm:flex">
-                                    <Link href="/dashboard">
-                                        Dashboard
-                                    </Link>
-                                </Button>
+                            <SignedIn>
+            <UserButton />
+            </SignedIn>
                             ) : (
                                 <>
                                     <Button size="sm" variant="tertiary" asChild className="hover:translate-y-0 hover:scale-100">
