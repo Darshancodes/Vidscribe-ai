@@ -121,10 +121,10 @@ const Features = () => {
                                     </div>
                                     <div className="flex flex-col mt-auto">
                                         <h4 className="text-xl font-heading font-medium heading ">
-                                            Image generation with AI
+                                        Smart Content Extraction
                                         </h4>
                                         <p className="text-sm md:text-base mt-2 text-muted-foreground">
-                                            Create stunning images with AI-powered tools in seconds.
+                                        Vidscribe AI uses advanced NLP to capture key topics, transitions, and insights, enhancing your video's unique narrative.
                                         </p>
                                     </div>
                                 </div>
@@ -136,10 +136,10 @@ const Features = () => {
                                     </div>
                                     <div className="flex flex-col mt-auto">
                                         <h4 className="text-xl font-heading font-medium heading ">
-                                            Hashtags suggestions
+                                            Advanced Video Processing
                                         </h4>
                                         <p className="text-sm md:text-base mt-2 text-muted-foreground">
-                                            Get hashtag suggestions based on your content and audience to increase your reach and engagement.
+                                        Our AI analyzes every frame and word, capturing every insight. With support for various formats and resolutions, uploading is seamless for any video type.
                                         </p>
                                     </div>
                                 </div>
