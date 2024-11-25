@@ -2,6 +2,7 @@ import React from "react";
 import { cn } from "@/functions";
 import Providers from "@/components/global/providers"; // Your custom Providers
 import "@/styles/globals.css";
+import "@/app/globals.css";
 import { ClerkProvider } from "@clerk/nextjs"; // Only import ClerkProvider here
 import MarketingLayout from "./marketinglayout"; // Assuming MarketingLayout is in the layouts folder
 import { ApolloProvider } from "@/lib/apollo-provider";

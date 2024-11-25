@@ -1,6 +1,7 @@
 import React from 'react';
 import Navbar from "@/components/marketing/navbar";
 import Footer from "@/components/marketing/footer";
+import { Toaster } from '@/components/ui/toaster';
 
 interface Props {
     children: React.ReactNode
@@ -15,6 +16,7 @@ const MarketingLayout = ({ children }: Props) => {
                 {children}
             </main>
             <Footer />
+            <Toaster />
         </>
     );
 };

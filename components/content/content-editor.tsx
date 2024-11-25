@@ -13,7 +13,7 @@ function SubmitButton() {
   return (
     <Button
       type="submit"
-      className={`w-40 bg-gradient-to-r from-purple-900 to-indigo-600 hover:from-purple-600 hover:to-indigo-900 text-white font-semibold py-2 px-4 rounded-full shadow-lg transform transition duration-200 ease-in-out hover:scale-105 focus:outline-none focus:ring-2`}
+      className={`w-30 text-white font-semibold py-2 px-4 shadow-lg transform transition duration-200 ease-in-out hover:scale-105 focus:outline-none focus:ring-2`}
       disabled={pending}
     >
       {pending ? (
@@ -87,13 +87,13 @@ export default function ContentEditor({
           <h2 className="text-2xl font-bold text-white-800 mb-2 flex items-center gap-2">
             📝 Edit your post
           </h2>
-          <p className="text-gray-600">Start editing your blog post below...</p>
+          <p className="text-gray-400">Start editing your blog post below...</p>
         </div>
         <div className="flex gap-4">
           <SubmitButton></SubmitButton>
           <Button
             onClick={handleExport}
-            className="w-40 bg-gradient-to-r from-amber-500 to-amber-900 hover:from-amber-600 hover:to-amber-700 text-white font-semibold py-2 px-4 rounded-full shadow-lg transform transition duration-200 ease-in-out hover:scale-105 focus:outline-none focus:ring-2 focus:ring-amber-500 focus:ring-opacity-50"
+            className="w-30 text-white font-semibold py-2 px-4 shadow-lg transform transition duration-200 ease-in-out hover:scale-105 focus:outline-none focus:ring-2"
           >
             <Download className="w-5 h-5 mr-2" />
             Export

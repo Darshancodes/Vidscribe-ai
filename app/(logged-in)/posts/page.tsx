@@ -23,7 +23,7 @@ export default async function Page() {
 
       {posts.length === 0 && (
         <div>
-          <p className="text-gray-600 text-lg lg:text-xl mb-4 line-clamp-3">
+          <p className="text-gray-400 text-lg lg:text-xl mb-4 line-clamp-3">
             You have no posts yet. Upload a video or audio to get started.
           </p>
           <Link
