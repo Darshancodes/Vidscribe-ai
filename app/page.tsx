@@ -6,7 +6,6 @@ import Wrapper from "@/components/global/wrapper";
 import Container from "@/components/global/container";
 import Features from "@/components/marketing/features";
 import Perks from "@/components/marketing/perks";
-import Reviews from "@/components/marketing/reviews";
 import CTA from "@/components/marketing/cta";
 
 const Home = () => {
