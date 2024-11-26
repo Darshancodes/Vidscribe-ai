@@ -5,6 +5,7 @@ import { Button } from "../ui/button";
 import { motion } from "framer-motion";
 import Image from "next/image";
 import Container from "../global/container";
+import { SignedIn, SignedOut } from "@clerk/nextjs";
 
 const Hero = () => {
     return (
@@ -21,8 +22,6 @@ const Hero = () => {
                     <span className="inline-flex items-center justify-center gap-2 animate-text-gradient animate-background-shine bg-gradient-to-r from-[#b2a8fd] via-[#8678f9] to-[#c7d2fe] bg-[200%_auto] bg-clip-text text-sm text-transparent">
                         Built for the future
                         <span className="text-xs text-secondary-foreground px-1.5 py-0.5 rounded-full bg-gradient-to-b from-background/20 to-background/10 flex items-center justify-center">
-                            {/*What&apos;s new
-                            <ArrowRightIcon className="w-3.5 h-3.5 ml-1 text-foreground/50" />*/}
                         </span>
                     </span>
                 </div>
@@ -38,16 +37,16 @@ const Hero = () => {
             </Container>
             <Container delay={0.2}>
                 <div className="flex items-center justify-center md:gap-x-6 mt-8">
-                    <Button asChild size="lg">
-                        <Link href="/app/sign-in">
-                            Start for free
-                        </Link>
-                    </Button>
-                    {/*<Button asChild size="lg" variant="outline" className="hidden md:flex">
-                        <Link href="#">
-                            How it works
-                        </Link>
-                    </Button>*/}
+                    <SignedIn>
+                        <Button asChild size="lg">
+                            <Link href="/dashboard">Start for free</Link>
+                        </Button>
+                    </SignedIn>
+                    <SignedOut>
+                        <Button asChild size="lg">
+                            <Link href="/sign-in">Start for free</Link>
+                        </Button>
+                    </SignedOut>
                 </div>
             </Container>
             <Container delay={0.3}>
@@ -69,4 +68,4 @@ const Hero = () => {
     )
 };
 
-export default Hero
+export default Hero;

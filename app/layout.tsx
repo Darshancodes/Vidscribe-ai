@@ -17,7 +17,12 @@ const RootLayout = ({ children }: Props) => {
       <head>
         <meta charSet="UTF-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
-        <title>Vidscribe</title>
+        <title>Vidscribe AI</title>
+        
+        {/* Favicon links */}
+        <link rel="icon" href="/icon.svg" sizes="any" />
+        <link rel="apple-touch-icon" href="/icon.svg" />
+        <link rel="manifest" href="/icon.svg" />
       </head>
       <body
         className={cn(
