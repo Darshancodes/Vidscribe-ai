@@ -114,7 +114,7 @@ async function generateBlogPost({
   userPosts: string;
 }) {
   try {
-    const response = await fetch("http://localhost:8686/graphql", {
+    const response = await fetch("https://vidscribe-ai-darshannn.hypermode.app/graphql", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",

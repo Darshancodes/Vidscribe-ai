@@ -13,7 +13,7 @@ import {
     if (!client || typeof window === "undefined") {
       client = new ApolloClient({
         link: createHttpLink({
-          uri: process.env.GRAPHQL_API_URL || "http://localhost:8686/graphql",
+          uri: process.env.GRAPHQL_API_URL || "https://vidscribe-ai-darshannn.hypermode.app/graphql",
           credentials: "include",
           fetch,
           headers: {
