@@ -59,6 +59,43 @@
   }
 }
 
+._toolbarRoot_uazmk_160 {
+  position: sticky;
+  top: 75px;
+  background-color: #0f0e0e;
+  border-bottom: 1px solid #727576;
+  margin-bottom: 20px;
+}
+
+/* Add this to your global CSS file */
+.toolbar-btn {
+  padding: 4px 8px;
+  border: 1px solid #e2e8f0;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 14px;
+}
+
+.toolbar-btn:hover {
+  background: #f7fafc;
+  /* color: #2d2e2e; */
+}
+
+.toolbar-select {
+  padding: 4px 8px;
+  border: 1px solid #e2e8f0;
+  border-radius: 4px;
+  cursor: pointer;
+  background-color: inherit;
+  color: #f7fafc;
+  font-size: 14px;
+}
+
+.toolbar-select:hover {
+  background: #f7fafc;
+  color: #2d2e2e;
+}
+
 @layer base {
   * {
     @apply border-border;
