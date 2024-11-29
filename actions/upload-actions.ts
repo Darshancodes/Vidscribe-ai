@@ -1,31 +1,25 @@
 "use server";
 
+import { GET_BLOG_CONTENT } from "@/components/upload/upload-form";
 import { executeGraphQLQuery } from "@/lib/apollo-client";
 import getDbConnection from "@/lib/db";
+import { revalidatePath } from "next/cache";
+import { redirect } from "next/navigation";
 import OpenAI from "openai";
 
 const openai = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY,
 });
 
-// Unified response type
-type ActionResponse = {
-  success: boolean;
-  message: string;
-  data?: any;
-  postId?: string | number;
-};
-
 export async function transcribeUploadedFile(
   resp: {
     serverData: { userId: string; file: any };
   }[]
-): Promise<ActionResponse> {
-  // Validate input
+) {
   if (!resp?.length) {
     return {
       success: false,
-      message: "Invalid file upload",
+      message: "File upload failed",
       data: null,
     };
   }
@@ -37,24 +31,21 @@ export async function transcribeUploadedFile(
     },
   } = resp[0];
 
-  // Validate file details
   if (!fileUrl || !fileName) {
     return {
       success: false,
-      message: "Missing file details",
+      message: "File upload failed",
       data: null,
     };
   }
 
   try {
-    // Fetch and convert file
     const response = await fetch(fileUrl);
     const blob = await response.blob();
     const file = new File([blob], fileName, {
       type: response.headers.get("content-type") || "audio/mpeg",
     });
 
-    // Transcribe file
     const transcriptions = await openai.audio.transcriptions.create({
       model: "whisper-1",
       file: file,
@@ -62,45 +53,31 @@ export async function transcribeUploadedFile(
 
     return {
       success: true,
-      message: "File transcribed successfully",
+      message: "File transcribed successfully!",
       data: { transcriptions, userId },
     };
   } catch (error) {
-    // Detailed error handling
-    console.error("Transcription error:", error);
+    console.error("Error processing file", error);
 
-    if (error instanceof OpenAI.APIError) {
-      switch (error.status) {
-        case 413:
-          return {
-            success: false,
-            message: "File exceeds 20MB limit",
-            data: null,
-          };
-        default:
-          return {
-            success: false,
-            message: error.message || "Transcription failed",
-            data: null,
-          };
-      }
+    if (error instanceof OpenAI.APIError && error.status === 413) {
+      return {
+        success: false,
+        message: "File size exceeds the max limit of 20MB",
+        data: null,
+      };
     }
 
     return {
       success: false,
-      message: "Unexpected transcription error",
+      message: error instanceof Error ? error.message : "Error processing file",
       data: null,
     };
   }
 }
 
-async function saveBlogPost(
-  userId: string, 
-  title: string, 
-  content: string
-): Promise<string> {
-  const sql = await getDbConnection();
+async function saveBlogPost(userId: string, title: string, content: string) {
   try {
+    const sql = await getDbConnection();
     const [insertedPost] = await sql`
       INSERT INTO posts (user_id, title, content)
       VALUES (${userId}, ${title}, ${content})
@@ -108,14 +85,14 @@ async function saveBlogPost(
     `;
     return insertedPost.id;
   } catch (error) {
-    console.error("Blog post save error:", error);
-    throw new Error("Failed to save blog post");
+    console.error("Error saving blog post", error);
+    throw error;
   }
 }
 
-async function getUserBlogPosts(userId: string): Promise<string> {
-  const sql = await getDbConnection();
+async function getUserBlogPosts(userId: string) {
   try {
+    const sql = await getDbConnection();
     const posts = await sql`
       SELECT content FROM posts 
       WHERE user_id = ${userId} 
@@ -124,8 +101,8 @@ async function getUserBlogPosts(userId: string): Promise<string> {
     `;
     return posts.map((post) => post.content).join("\n\n");
   } catch (error) {
-    console.error("Fetch blog posts error:", error);
-    return ""; // Return empty string instead of throwing
+    console.error("Error getting user blog posts", error);
+    throw error;
   }
 }
 
@@ -135,44 +112,65 @@ async function generateBlogPost({
 }: {
   transcriptions: string;
   userPosts: string;
-}): Promise<string> {
+}) {
   try {
-    const response = await fetch("https://vidscribe-ai-darshannn.hypermode.app/graphql", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json", 
-        authorization: `Bearer ${process.env.NEXT_PUBLIC_MODUS_API_KEY}`,
-      },
-      body: JSON.stringify({
-        query: `
+    const response = await fetch(
+      "https://vidscribe-ai-darshannn.hypermode.app/graphql",
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          authorization: `Bearer ${process.env.NEXT_PUBLIC_MODUS_API_KEY}`,
+        },
+        body: JSON.stringify({
+          query: `
           query GenerateBlogContent($data: String!) {
             generateBlogContent(transcriptions: $data)
           }
         `,
-        variables: {
-          data: transcriptions,
-        },
-      }),
-    });
-
-    // Enhanced error handling
-    if (!response.ok) {
-      const errorText = await response.text();
-      throw new Error(`Blog generation failed: ${response.status} - ${errorText}`);
-    }
+          variables: {
+            data: transcriptions,
+          },
+        }),
+      }
+    );
 
     const result = await response.json();
 
     if (result.errors) {
       throw new Error(result.errors[0].message);
     }
+    console.log("result", result);
 
     return result.data.generateBlogContent;
   } catch (error) {
-    console.error("Blog generation error:", error);
+    console.error("Error generating blog post:", error);
     throw error;
   }
 }
+
+// async function generateBlogPost({
+//   transcriptions,
+//   userPosts,
+// }: {
+//   transcriptions: string;
+//   userPosts?: string;
+// }) {
+//   try {
+//     const data = await executeGraphQLQuery(GET_BLOG_CONTENT, {
+//       data: transcriptions,
+//     });
+
+//     if (!data?.generateBlogContent) {
+//       throw new Error("Failed to generate blog content");
+//     }
+
+//     return data.generateBlogContent;
+//   } catch (error) {
+//     console.error("Error generating blog post:", error);
+//     throw error;
+//   }
+// }
 
 export async function generateBlogPostAction({
   transcriptions,
@@ -180,53 +178,40 @@ export async function generateBlogPostAction({
 }: {
   transcriptions: { text: string };
   userId: string;
-}): Promise<ActionResponse> {
+}) {
   try {
-    // Validate inputs
+    const userPosts = await getUserBlogPosts(userId);
+
     if (!transcriptions?.text) {
       return {
         success: false,
-        message: "No transcription provided",
+        message: "No transcription text provided",
       };
     }
 
-    // Fetch user's previous posts
-    const userPosts = await getUserBlogPosts(userId);
-
-    // Generate blog post
     const blogPost = await generateBlogPost({
       transcriptions: transcriptions.text,
       userPosts,
     });
 
-    // Validate generated post
     if (!blogPost) {
       return {
         success: false,
-        message: "Blog generation failed",
+        message: "Blog post generation failed, please try again...",
       };
     }
 
-    // Parse blog post
     const [title, ...contentParts] = blogPost.split("\n");
-    const content = contentParts.join("\n");
+    console.log("title =>", title);
 
-    // Save blog post
-    const postId = await saveBlogPost(userId, title, content);
-
-    return {
-      success: true,
-      message: "Blog post created successfully",
-      postId: postId,
-    };
+    const postId = await saveBlogPost(userId, title, blogPost);
+    return postId;
   } catch (error) {
-    console.error("Blog post action error:", error);
-    
+    console.error("Error in generateBlogPostAction:", error);
     return {
       success: false,
-      message: error instanceof Error 
-        ? error.message 
-        : "Unexpected blog post generation error",
+      message:
+        error instanceof Error ? error.message : "An unexpected error occurred",
     };
   }
 }

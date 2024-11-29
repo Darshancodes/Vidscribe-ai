@@ -101,12 +101,12 @@ export default function UploadForm() {
           description: "Please wait while we generate your blog post.",
         });
 
-        const result = await generateBlogPostAction({
+        const postID = await generateBlogPostAction({
           transcriptions: data.transcriptions,
           userId: data.userId,
         });
 
-        router.push(`/posts/${result.postId}`);
+        router.push(`/posts/${postID}`);
 
         toast({
           title: "🎉 Woohoo! Your AI blog is created! 🎊",
