@@ -120,7 +120,7 @@ async function generateBlogPost({
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          authorization: `Bearer ${process.env.NEXT_PUBLIC_MODUS_API_KEY}`,
+          authorization: `Bearer ${process.env.MODUS_API_KEY}`,
         },
         body: JSON.stringify({
           query: `
