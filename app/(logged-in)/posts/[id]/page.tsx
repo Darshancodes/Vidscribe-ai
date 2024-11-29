@@ -3,6 +3,12 @@ import getDbConnection from "@/lib/db";
 import { currentUser } from "@clerk/nextjs/server";
 import { redirect } from "next/navigation";
 
+type Post = {
+  content: string;
+  title: string;
+  id: string;
+};
+
 export default async function PostsPage({
   params: { id },
 }: {
@@ -16,12 +22,24 @@ export default async function PostsPage({
 
   const sql = await getDbConnection();
 
-  const posts: any =
-    await sql`SELECT * from posts where user_id = ${user.id} and id = ${id}`;
+  // Fetch posts from the database
+  const posts = await sql`
+    SELECT content, title, id 
+    FROM posts 
+    WHERE user_id = ${user.id}::uuid 
+    AND id = ${id}::uuid
+  `;
+
+  // Ensure posts is correctly typed as Post[]
+  const validatedPosts: Post[] = posts.map((p: any) => ({
+    content: p.content,
+    title: p.title,
+    id: p.id,
+  }));
 
   return (
     <div className="mx-auto w-full max-w-screen-xl px-2.5 lg:px-0 mb-12 mt-28">
-      <ContentEditor posts={posts} />
+      <ContentEditor posts={validatedPosts} />
     </div>
   );
 }
