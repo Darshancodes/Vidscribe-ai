@@ -117,7 +117,8 @@ async function generateBlogPost({
     const response = await fetch("https://vidscribe-ai-darshannn.hypermode.app/graphql", {
       method: "POST",
       headers: {
-        "Content-Type": "application/json",
+        "Content-Type": "application/json", 
+        authorization: `Bearer ${process.env.NEXT_PUBLIC_MODUS_API_KEY}`,
       },
       body: JSON.stringify({
         query: `

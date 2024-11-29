@@ -37,16 +37,8 @@ export default async function Dashboard() {
 
           
             <p className="mt-2 text-lg leading-8 text-white-600 max-w-2xl text-center">
-              You get 
-
-              <span className="ml-1 mr-1 font-bold text-purple-600 bg-purple-100 px-1 py-0.5 rounded-md">
-                3 blog posts
-              </span>
-              
-              as part of this hackathon
+              Note: Please upload the video whose length is below 30 Mins. 
             </p>
-
-
           
             <BgGradient>
               <UploadForm />
