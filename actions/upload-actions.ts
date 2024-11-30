@@ -11,6 +11,17 @@ const openai = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY,
 });
 
+export async function handleInitialUpload(resp: any) {
+  return await transcribeUploadedFile(resp);
+}
+
+export async function handleBlogGeneration({ transcriptions, userId }: any) {
+  return await generateBlogPostAction({
+    transcriptions,
+    userId,
+  });
+}
+
 export async function transcribeUploadedFile(
   resp: {
     serverData: { userId: string; file: any };
@@ -75,7 +86,11 @@ export async function transcribeUploadedFile(
   }
 }
 
-async function saveBlogPost(userId: string, title: string, content: string) {
+export async function saveBlogPost(
+  userId: string,
+  title: string,
+  content: string
+) {
   try {
     const sql = await getDbConnection();
     const [insertedPost] = await sql`
@@ -106,13 +121,14 @@ async function getUserBlogPosts(userId: string) {
   }
 }
 
-async function generateBlogPost({
+export async function generateBlogPost({
   transcriptions,
-  userPosts,
 }: {
   transcriptions: string;
-  userPosts: string;
 }) {
+  const controller = new AbortController();
+  const timeoutId = setTimeout(() => controller.abort(), 25000);
+
   try {
     const response = await fetch(
       "https://vidscribe-ai-darshannn.hypermode.app/graphql",
@@ -120,34 +136,70 @@ async function generateBlogPost({
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          authorization: `Bearer ${process.env.MODUS_API_KEY}`,
+          authorization: `Bearer ${process.env.NEXT_PUBLIC_MODUS_API_KEY}`,
         },
         body: JSON.stringify({
-          query: `
-          query GenerateBlogContent($data: String!) {
+          query: `query GenerateBlogContent($data: String!) {
             generateBlogContent(transcriptions: $data)
-          }
-        `,
-          variables: {
-            data: transcriptions,
-          },
+          }`,
+          variables: { data: transcriptions },
         }),
+        signal: controller.signal,
       }
     );
 
+    clearTimeout(timeoutId);
     const result = await response.json();
-
-    if (result.errors) {
-      throw new Error(result.errors[0].message);
-    }
-    console.log("result", result);
-
+    if (result.errors) throw new Error(result.errors[0].message);
     return result.data.generateBlogContent;
-  } catch (error) {
-    console.error("Error generating blog post:", error);
+  } catch (error: any) {
+    if (error?.name === "AbortError") {
+      throw new Error("Request timeout - please try again");
+    }
     throw error;
   }
 }
+
+// async function generateBlogPost({
+//   transcriptions,
+// }: {
+//   transcriptions: string;
+// }) {
+//   try {
+//     const response = await fetch(
+//       "https://vidscribe-ai-darshannn.hypermode.app/graphql",
+//       {
+//         method: "POST",
+//         headers: {
+//           "Content-Type": "application/json",
+//           authorization: `Bearer ${process.env.NEXT_PUBLIC_MODUS_API_KEY}`,
+//         },
+//         body: JSON.stringify({
+//           query: `
+//           query GenerateBlogContent($data: String!) {
+//             generateBlogContent(transcriptions: $data)
+//           }
+//         `,
+//           variables: {
+//             data: transcriptions,
+//           },
+//         }),
+//       }
+//     );
+
+//     const result = await response.json();
+
+//     if (result.errors) {
+//       throw new Error(result.errors[0].message);
+//     }
+//     console.log("result", result);
+
+//     return result.data.generateBlogContent;
+//   } catch (error) {
+//     console.error("Error generating blog post:", error);
+//     throw error;
+//   }
+// }
 
 // async function generateBlogPost({
 //   transcriptions,
@@ -180,8 +232,6 @@ export async function generateBlogPostAction({
   userId: string;
 }) {
   try {
-    const userPosts = await getUserBlogPosts(userId);
-
     if (!transcriptions?.text) {
       return {
         success: false,
@@ -191,7 +241,7 @@ export async function generateBlogPostAction({
 
     const blogPost = await generateBlogPost({
       transcriptions: transcriptions.text,
-      userPosts,
+      // userPosts,
     });
 
     if (!blogPost) {
